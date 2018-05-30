@@ -1,28 +1,69 @@
 # bitcorns-api-connector
 A Javascript Bitcorns API connector
 
-## Install
+## Install bitcorns-api-connector
 Place your bitcorns-api-connector lib into a relevant direcotry for your project, then call the module from your project files:
-
-````
-const bitcorns = require('./models/bitcorns');
+```js
+const bitcorns = require('./models/bitcorns'); 
 ```
 
-You can then start using the bitcorns api:
+## Use bitcorns api connector
+```js
 
-## Use
-```js 
-bitcorns.farms().then( data => {
-  // do something with data!
-}).catch( error => {
-  // do something with error!
+bitcorns.farms().then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
 });
-```
 
-```js 
-bitcorns.farm('some-farm-address').then( data => {
-  // do something with data!
-}).catch( error => {
-  // do something with error!
+
+bitcorns.farm('18mxQdLxcLstD6ttbHykvEoAYdu4eADtEf').then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
 });
+
+
+bitcorns.coops().then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
+});
+
+
+bitcorns.coop('corn-tang-clan').then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
+});
+
+
+
+bitcorns.cards().then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
+});
+
+
+bitcorns.card('THESCARECROW').then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
+});
+
+bitcorns.tokens().then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
+});
+
+
+bitcorns.token('BITCORN').then( data =>{
+  // do something with data
+}).catch(error => {
+   // do something with error
+});
+
+
 ```
