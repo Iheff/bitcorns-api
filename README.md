@@ -2,7 +2,12 @@
 A Javascript Bitcorns API connector
 
 ## Install bitcorns-api-connector
-Place your bitcorns-api-connector lib into a relevant direcotry for your project, then call the module from your project files:
+Install using npm
+```
+$ npm install bitcorns-api
+```
+
+
 ```js
 const bitcorns = require('bitcorns-api'); 
 ```
