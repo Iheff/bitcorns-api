@@ -1,0 +1,36 @@
+{
+  "name": "bitcorns-api",
+  "version": "1.0.0",
+  "description": "Bitcorns API Connector",
+  "main": "bitcorns-api.js\u001b[D\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001bindex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "js" : "babel index.js --out-file index-es5.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndlbl/bitcorns-api.git"
+  },
+  "keywords": [
+    "bitcorns",
+    "api",
+    "connector",
+    "crypto",
+    "xcp",
+    "games"
+  ],
+  "author": "inedible trade",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ndlbl/bitcorns-api/issues"
+  },
+  "homepage": "https://github.com/ndlbl/bitcorns-api#readme",
+  "dependencies": {
+    "request": "^2.87.0",
+    "simple-rate-limiter": "^0.2.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}

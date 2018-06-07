@@ -2,14 +2,14 @@
 var limit = require("simple-rate-limiter");
 var request = limit(require("request")).to(110).per(60000);
 
-function Bitcorns() {
+function Bitcorns(buildLargeCacheObject = false) {
     this.hasData = false;
     let bitcorns_url = 'https://bitcorns.com/api';
     //let rateMax = 60000 / 110; //actually 120 per minute but lets try an max out at 110.
     this.err = {
-        notFound: '404: No moisture found. DAAB warning.',
-        somethingWrong: '500: something is wonky.',
-        Listing: '500: TheScarecrow may have sent his flocks to this barron wasteland.',
+        notFound: 'No moisture found.',
+        somethingWrong: 'Something is wonky.',
+        Listing: 'TheScarecrow may have sent his flocks to this barron wasteland.',
         SingularGroupSuffix: ' - I can only find coops using their plentiful slugs',
         SingularTokenSuffix: '- I can only find tokes with help from their asset names',
         SingularCardSuffix: " - I can only find cards with help from their asset names",
@@ -22,8 +22,6 @@ function Bitcorns() {
 
             request(bitcorns_url + '/' + verb + '/' + arg, (err, resp, bdy) => {
 
-                console.log('request URL: ' + bitcorns_url + '/' + verb + '/' + arg);
-
                 if (/^</.test(bdy)) {
 
                     return reject(context.err.notFound);
@@ -34,17 +32,8 @@ function Bitcorns() {
 
                 if (resp.statusCode !== 200 || resp.headers['content-type'] !== 'application/json') return reject(context.err.notFound);
 
-                if (arg !== "") {
-
-                    if (bdy instanceof Object) return resolve(bdy);
-                    else return reject(context.err.Listing);
-
-                } else {
-
-                    if (bdy instanceof Object) return resolve(bdy);
-                    else return reject(context.err.Listing);
-
-                }
+                if (bdy instanceof Object) return resolve(bdy);
+                else return reject(context.err.Listing);
 
             }); // end request
 
@@ -57,7 +46,7 @@ function Bitcorns() {
     this.boundGeneric = this.genericApiCall.bind();
 
     /* This section just expands the API of this modules */
-    this.farms = function() {
+    this.farms = () => {
         let context = this;
         return new Promise((resolve, reject) => {
             this.boundGeneric('farms').then(function(data) {
@@ -68,18 +57,18 @@ function Bitcorns() {
         });
     };
 
-    this.farm = function(arg) {
+    this.farm = (arg) => {
         let context = this;
         return new Promise((resolve, reject) => {
-            this.boundGeneric('farm', arg).then(function(data) {
+            this.boundGeneric('farms', arg).then(function(data) {
                 return resolve(data);
             }).catch(error => {
-                return reject(context.err.Listing);
+                return reject(context.err.Listing+error);
             });
         });
     };
 
-    this.coops = function() {
+    this.coops = () => {
         let context = this;
         return new Promise((resolve, reject) => {
             this.boundGeneric('coops').then(function(data) {
@@ -101,7 +90,7 @@ function Bitcorns() {
         });
     };
 
-    this.tokens = function() {
+    this.tokens = () => {
         let context = this;
         return new Promise((resolve, reject) => {
             this.boundGeneric('tokens').then(function(data) {
@@ -112,7 +101,7 @@ function Bitcorns() {
         });
     };
 
-    this.token = function(arg) {
+    this.token = (arg) => {
         let context = this;
         return new Promise((resolve, reject) => {
             this.boundGeneric('token', arg + '.json').then(function(data) {
@@ -123,7 +112,7 @@ function Bitcorns() {
         });
     };
 
-    this.cards = function() {
+    this.cards = () => {
         let context = this;
         return new Promise((resolve, reject) => {
             this.boundGeneric('cards').then(function(data) {
@@ -134,19 +123,25 @@ function Bitcorns() {
         });
     };
 
-    this.card = function(arg) {
+    this.card = (arg) => {
         let context = this;
         return new Promise((resolve, reject) => {
             this.boundGeneric('cards', arg).then(function(data) {
-                return resolve(data);
+                if(!data.error){
+                    return resolve(data);
+                } else {
+                    return reject(context.err.notFound+context.err.SingularCardSuffix);
+                }
+                
             }).catch(error => {
+                console.log('sadFace');
                 return reject(context.err.notFound+context.err.SingularCardSuffix);
             });
         });
     };
 
     /* generate a cache to use instead, then we can build 
-     * some interesting mapped data for cool new commands, as 
+     * some interesting mapped data for cool new bot commands etc, as 
      * the current index calls are DAAB with longtail data.
      */
 
@@ -163,10 +158,14 @@ function Bitcorns() {
             let tokensPromise = this.tokens();
 
             Promise.all([coopsPromise, farmsPromise, cardsPromise, tokensPromise]).then(function(values) {
+            
                 if (values) resolve(values);
                 else reject(context.somethingWrong);
+            
             }).catch((err) => {
-                console.log(err);
+            
+                reject(err);
+            
             });
 
         });
@@ -203,7 +202,7 @@ function Bitcorns() {
     };
 
     this.fetchCache = () => {
-
+        let outerContext = this;
         this.getData().then((data) => {
 
             let context = this;
@@ -212,35 +211,40 @@ function Bitcorns() {
             context.data.cards = data[2];
             context.data.tokens = data[3];
 
-            /* good wauy to get IP blocked for excessive usage.*/
-             return context.getLongTailFarmData().then(function(data) {
+            if(buildLargeCacheObject){
+            
+                return context.getLongTailFarmData().then(function(data) {
 
-                context.data.farmsById = {};
-                context.data.farmsByName = {};
+                    context.data.farmsById = {};
+                    context.data.farmsByName = {};
 
-                for (var i = 0; i < data.length; i++) {
+                    for (var i = 0; i < data.length; i++) {
+                        
+                        context.data.farmsById[data[i].address] = data[i];
+                        context.data.farmsByName[data[i].name] = data[i];
+                        return {farmsById:context.data.farmsById,farmsByName:context.data.farmsByName};
+                    }
+
+                    outercontext.hasData = true;
                     
-                    context.data.farmsById[data[i].address] = data[i];
-                    context.data.farmsByName[data[i].name] = data[i];
-                
-                }
+                }).catch((err) => {
+                    
+                    console.log(err)
+                    
+                });
 
-                this.hasData = true;
-                console.log(data)
-                
-                
-            }).catch((err) => {
-                
-                console.log(err)
-                
-            });
+            } else {
+                return;
+            }
 
         }).catch((err) => {
+
             console.log(err)
-            //reject(err);
         
         });
+
         /* end cache generation WIP. */
+    
     };
 
     this.fetchCache();
