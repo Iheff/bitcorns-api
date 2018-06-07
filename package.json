@@ -2,7 +2,7 @@
   "name": "bitcorns-api",
   "version": "1.0.0",
   "description": "Bitcorns API Connector",
-  "main": "bitcorns-api.js\u001b[D\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001bindex.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "js" : "babel index.js --out-file index-es5.js"
@@ -22,9 +22,9 @@
   "author": "inedible trade",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ndlbl/bitcorns-api/issues"
+    "url": "https://github.com/iheff/bitcorns-api/issues"
   },
-  "homepage": "https://github.com/ndlbl/bitcorns-api#readme",
+  "homepage": "https://github.com/iheff/bitcorns-api#readme",
   "dependencies": {
     "request": "^2.87.0",
     "simple-rate-limiter": "^0.2.3"
