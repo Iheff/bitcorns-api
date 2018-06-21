@@ -1,6 +1,6 @@
 // const request = require("request");
-var limit = require("simple-rate-limiter");
-var request = limit(require("request")).to(110).per(60000);
+const limit = require("simple-rate-limiter");
+const request = limit(require("request")).to(110).per(60000);
 
 function Bitcorns(buildLargeCacheObject = false) {
     this.hasData = false;
@@ -23,17 +23,20 @@ function Bitcorns(buildLargeCacheObject = false) {
             request(bitcorns_url + '/' + verb + '/' + arg, (err, resp, bdy) => {
 
                 if (/^</.test(bdy)) {
-
                     return reject(context.err.notFound);
-
                 }
 
                 bdy = JSON.parse(bdy);
 
-                if (resp.statusCode !== 200 || resp.headers['content-type'] !== 'application/json') return reject(context.err.notFound);
+                if (resp.statusCode !== 200 || resp.headers['content-type'] !== 'application/json') {
+                    return reject(context.err.notFound);
+                }
 
-                if (bdy instanceof Object) return resolve(bdy);
-                else return reject(context.err.Listing);
+                if (bdy instanceof Object) {
+                   return resolve(bdy);
+                } else {
+                    return reject(context.err.Listing);
+                }
 
             }); // end request
 
@@ -152,15 +155,18 @@ function Bitcorns(buildLargeCacheObject = false) {
         let context = this;
         return new Promise((resolve, reject) => {
 
-            let farmsPromise = this.farms();
-            let coopsPromise = this.coops();
-            let cardsPromise = this.cards();
-            let tokensPromise = this.tokens();
+            const farmsPromise = this.farms();
+            const coopsPromise = this.coops();
+            const cardsPromise = this.cards();
+            const tokensPromise = this.tokens();
 
             Promise.all([coopsPromise, farmsPromise, cardsPromise, tokensPromise]).then(function(values) {
             
-                if (values) resolve(values);
-                else reject(context.somethingWrong);
+                if (values) {
+                    resolve(values);
+                } else {
+				    reject(context.somethingWrong);
+                }
             
             }).catch((err) => {
             
@@ -175,9 +181,9 @@ function Bitcorns(buildLargeCacheObject = false) {
     this.getLongTailFarmData = () => {
 
         let context = this;
-        var farmPromises = [];
+        let farmPromises = [];
 
-        for (var i = 0; i < this.data.farms.length; i++) {
+        for (let i = 0; i < this.data.farms.length; i++) {
 
             let farmPromise = this.farm(this.data.farms[i].address);
             farmPromises.push(farmPromise);
@@ -218,7 +224,7 @@ function Bitcorns(buildLargeCacheObject = false) {
                     context.data.farmsById = {};
                     context.data.farmsByName = {};
 
-                    for (var i = 0; i < data.length; i++) {
+                    for (let i = 0; i < data.length; i++) {
                         
                         context.data.farmsById[data[i].address] = data[i];
                         context.data.farmsByName[data[i].name] = data[i];
